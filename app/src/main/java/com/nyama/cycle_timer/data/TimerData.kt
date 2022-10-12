@@ -1,3 +1,10 @@
 package com.nyama.cycle_timer.data
 
-data class TimerData(val activity_time: String, val break_time: String, val set_number: Int) {}
+data class TimerData(
+    val activityMinutes: Int,
+    val activitySeconds: Int,
+    val breakMinutes: Int,
+    val breakSeconds: Int,
+    val setNumber: Int,
+    val isEndless: Boolean
+    ) {}

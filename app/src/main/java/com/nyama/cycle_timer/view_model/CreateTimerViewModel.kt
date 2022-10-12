@@ -7,9 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class CreateTimerViewModel : ViewModel() {
-    var activity_minutes by mutableStateOf("20")
-    var activity_seconds by mutableStateOf("00")
-    var break_minutes by mutableStateOf("05")
-    var break_seconds by mutableStateOf("00")
-    var sets_number by mutableStateOf("5")
+    var activityMinutes by mutableStateOf("20")
+    var activitySeconds by mutableStateOf("00")
+    var breakMinutes by mutableStateOf("05")
+    var breakSeconds by mutableStateOf("00")
+    var setNumber by mutableStateOf("5")
+    var isEndless by mutableStateOf(true)
 }

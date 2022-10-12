@@ -25,18 +25,18 @@ fun CreateTimerScreen(
     Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
         SettingTimer(
             title = "Activity",
-            minutes = viewModel.activity_minutes,
-            seconds = viewModel.activity_seconds,
+            minutes = viewModel.activityMinutes,
+            seconds = viewModel.activitySeconds,
             viewModel = viewModel
         )
         SettingTimer(
             title = "Break",
-            minutes = viewModel.break_minutes,
-            seconds = viewModel.break_seconds,
+            minutes = viewModel.breakMinutes,
+            seconds = viewModel.breakSeconds,
             viewModel = viewModel
         )
         SettingSets(
-            value = viewModel.sets_number,
+            value = viewModel.setNumber,
             viewModel = viewModel
         )
         Column(
@@ -48,9 +48,12 @@ fun CreateTimerScreen(
                     onClickStartButton(
                         Gson().toJson(
                             TimerData(
-                                "${viewModel.activity_minutes}:${viewModel.activity_seconds}",
-                                "${viewModel.break_minutes}:${viewModel.break_seconds}",
-                                viewModel.sets_number.toInt()
+                                viewModel.activityMinutes.toInt(),
+                                viewModel.activitySeconds.toInt(),
+                                viewModel.breakMinutes.toInt(),
+                                viewModel.breakSeconds.toInt(),
+                                viewModel.setNumber.toInt(),
+                                viewModel.isEndless
                             )
                         )
                     )
@@ -84,9 +87,9 @@ fun SettingTimer(title: String, minutes: String, seconds: String, viewModel: Cre
                 value = minutes,
                 onValueChange = {
                     if (title == "Activity") {
-                        viewModel.activity_minutes = it
+                        viewModel.activityMinutes = it
                     } else {
-                        viewModel.break_minutes = it
+                        viewModel.breakMinutes = it
                     }
                 },
                 singleLine = true,
@@ -104,9 +107,9 @@ fun SettingTimer(title: String, minutes: String, seconds: String, viewModel: Cre
                 value = seconds,
                 onValueChange = {
                     if (title == "Activity") {
-                        viewModel.activity_seconds = it
+                        viewModel.activitySeconds = it
                     } else {
-                        viewModel.break_seconds = it
+                        viewModel.breakSeconds = it
                     }
                 },
                 singleLine = true,
@@ -138,7 +141,10 @@ fun SettingSets(value: String, viewModel: CreateTimerViewModel) {
                             .height(56.dp)
                             .selectable(
                                 selected = (text == selectedOption),
-                                onClick = { onOptionSelected(text) },
+                                onClick = {
+                                    onOptionSelected(text)
+                                    viewModel.isEndless = text == "Endless"
+                                },
                                 role = Role.RadioButton
                             )
                             .padding(horizontal = 16.dp),
@@ -146,7 +152,7 @@ fun SettingSets(value: String, viewModel: CreateTimerViewModel) {
                     ) {
                         RadioButton(
                             selected = (text == selectedOption),
-                            onClick = null // null recommended for accessibility with screenreaders
+                            onClick = null,
                         )
                         Text(
                             text = text,
@@ -157,7 +163,7 @@ fun SettingSets(value: String, viewModel: CreateTimerViewModel) {
                     if (text == "Set manually") {
                         OutlinedTextField(
                             value = value,
-                            onValueChange = { viewModel.sets_number = it },
+                            onValueChange = { viewModel.setNumber = it },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier

@@ -27,7 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
 import com.nyama.cycle_timer.data.TimerData
-import com.nyama.cycle_timer.ui.TimerScreen
+import com.nyama.cycle_timer.ui.timer.TimerScreen
 import com.nyama.cycle_timer.ui.create_timer.CreateTimerScreen
 import com.nyama.cycle_timer.ui.theme.Cycle_timerTheme
 
@@ -57,7 +57,12 @@ class MainActivity : ComponentActivity() {
                             val timerJson = backStackEntry.arguments?.getString("timer_data")
                             val timerDataObject = Gson().fromJson(timerJson, TimerData::class.java)
 
-                            TimerScreen(timerDataObject)
+                            TimerScreen(
+                                timerDataObject,
+                                onClickTopButton = {
+                                    navController.navigate(CreateTimer.route)
+                                }
+                            )
                         }
                     }
                 }
