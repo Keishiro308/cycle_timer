@@ -34,6 +34,7 @@ fun TimerScreen(
     val isPlaying = viewModel.isPlaying.observeAsState()
     val isCompleted = viewModel.isCompleted.observeAsState()
     val isActivity = viewModel.isActivity.observeAsState()
+    val isLastSet = viewModel.isLastSet.observeAsState()
     val activityTime = viewModel.getMilliseconds(activityMinutes.value!!, activitySeconds.value!!).formatTime()
     val breakTime = viewModel.getMilliseconds(breakMinutes.value!!, breakSeconds.value!!).formatTime()
 
@@ -95,24 +96,32 @@ fun TimerScreen(
                     style = TextStyle.Default.copy(fontSize = 48.sp),
                     modifier = Modifier.padding(bottom = 30.dp)
                 )
-                OutlinedButton(
-                    onClick = {viewModel.handleCountDownTimer()},
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (isPlaying.value!!) {
-                        Text(text = "Finish", modifier = Modifier.padding(16.dp, 8.dp))
-                    } else {
-                        Text(text = "Start", modifier = Modifier.padding(16.dp, 8.dp))
+                    OutlinedButton(
+                        onClick = {viewModel.handleCountDownTimer()},
+                    ) {
+                        if (isPlaying.value!!) {
+                            Text(text = "Finish", modifier = Modifier.padding(16.dp, 8.dp))
+                        } else {
+                            Text(text = "Start", modifier = Modifier.padding(16.dp, 8.dp))
+                        }
+                    }
+                    if (!isLastSet.value!!) {
+                        OutlinedButton(
+                            onClick = {viewModel.goNext()},
+                            enabled = isPlaying.value!!
+                        ) {
+                            if (isActivity.value!!) {
+                                Text(text = "Next Break", modifier = Modifier.padding(16.dp, 8.dp))
+                            } else {
+                                Text(text = "Next Activity", modifier = Modifier.padding(16.dp, 8.dp))
+                            }
+                        }
                     }
                 }
-//                if (!isLastSet.value!!) {
-//                    OutlinedButton(onClick = {viewModel.goNext()}) {
-//                        if (isPlaying.value!!) {
-//                            Text(text = "Next Break")
-//                        } else {
-//                            Text(text = "Next Activity")
-//                        }
-//                    }
-//                }
             }
             
         }

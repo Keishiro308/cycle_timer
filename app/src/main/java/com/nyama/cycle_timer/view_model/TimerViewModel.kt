@@ -58,17 +58,15 @@ class TimerViewModel: ViewModel() {
     }
 
     fun goNext() {
-        var milliseconds: Long
-        if (isPlaying.value == true) {
-            milliseconds = getMilliseconds(_breakMinutes.value!!, _breakSeconds.value!!)
-            handleTimerValues(false, milliseconds.formatTime())
+        countDownTimer?.cancel()
+        if (_isActivity.value == true) {
+           _isActivity.value = false
         } else {
             _currentSet.value = _currentSet.value!! + 1
-            if (_currentSet.value == _setNumber.value) {
+            if (!_isEndless.value!! && _currentSet.value == _setNumber.value) {
                 _isLastSet.value = true
             }
-            milliseconds = getMilliseconds(_activityMinutes.value!!, _activitySeconds.value!!)
-            handleTimerValues(true, milliseconds.formatTime())
+            _isActivity.value = true
         }
         startTimer()
     }
