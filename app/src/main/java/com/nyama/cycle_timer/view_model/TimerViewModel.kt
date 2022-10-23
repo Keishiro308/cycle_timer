@@ -1,16 +1,19 @@
 package com.nyama.cycle_timer.view_model
 
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
+import android.app.Application
+import android.content.Context
+import android.os.*
+import android.os.VibrationEffect.DEFAULT_AMPLITUDE
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.os.HandlerCompat.postDelayed
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.nyama.cycle_timer.data.TimerData
 import com.nyama.cycle_timer.utils.Utility.formatTime
 
-class TimerViewModel: ViewModel() {
+class TimerViewModel(application: Application): AndroidViewModel(application) {
     private val _activityMinutes = MutableLiveData(20)
     private val _activitySeconds = MutableLiveData(0)
     private val _breakMinutes = MutableLiveData(5)
@@ -23,6 +26,8 @@ class TimerViewModel: ViewModel() {
     private val _isLastSet = MutableLiveData(false)
     private val _isEndless = MutableLiveData(false)
     private val _currentSet = MutableLiveData(1)
+
+    private val context = getApplication<Application>().applicationContext
 
     private var countDownTimer: CountDownTimer? = null
 
@@ -89,6 +94,9 @@ class TimerViewModel: ViewModel() {
         countDownTimer = object : CountDownTimer(milliseconds, 1000) {
 
             override fun onTick(millisRemaining: Long) {
+                if (millisRemaining <= 3000) {
+                    vibratePhone(context = context)
+                }
                 handleTimerValues(true, millisRemaining.formatTime())
             }
 
@@ -121,5 +129,13 @@ class TimerViewModel: ViewModel() {
     private fun handleTimerValues(isPlaying: Boolean, text: String) {
         _time.value = text
         _isPlaying.value = isPlaying
+    }
+
+    fun vibratePhone(context: Context) {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(200, DEFAULT_AMPLITUDE))
+        }
     }
 }
