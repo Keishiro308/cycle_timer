@@ -94,7 +94,7 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
         countDownTimer = object : CountDownTimer(milliseconds, 1000) {
 
             override fun onTick(millisRemaining: Long) {
-                if (millisRemaining <= 3000) {
+                if (millisRemaining in 1001..4000) {
                     vibratePhone(context = context)
                 }
                 handleTimerValues(true, millisRemaining.formatTime())
