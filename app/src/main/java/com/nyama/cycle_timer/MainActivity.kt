@@ -1,5 +1,7 @@
 package com.nyama.cycle_timer
 
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,6 +36,15 @@ import com.nyama.cycle_timer.ui.theme.Cycle_timerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build()
+        val soundPool = SoundPool.Builder()
+            .setAudioAttributes(audioAttributes)
+            .setMaxStreams(1)
+            .build()
+
         setContent {
             Cycle_timerTheme {
                 val navController = rememberNavController()
@@ -59,6 +70,7 @@ class MainActivity : ComponentActivity() {
 
                             TimerScreen(
                                 timerDataObject,
+                                soundPool,
                                 onClickTopButton = {
                                     navController.navigate(CreateTimer.route)
                                 }
