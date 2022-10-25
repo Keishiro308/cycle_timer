@@ -1,5 +1,6 @@
 package com.nyama.cycle_timer.ui.timer
 
+import android.media.SoundPool
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -21,10 +22,12 @@ import com.nyama.cycle_timer.view_model.TimerViewModel
 @Composable
 fun TimerScreen(
     timerData: TimerData,
+    soundPool: SoundPool,
     viewModel: TimerViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onClickTopButton: () -> Unit
 ) {
     viewModel.setter(timerData)
+    viewModel.soundPool = soundPool
     val activityMinutes = viewModel.activityMinutes.observeAsState()
     val activitySeconds = viewModel.activitySeconds.observeAsState()
     val breakMinutes = viewModel.breakMinutes.observeAsState()

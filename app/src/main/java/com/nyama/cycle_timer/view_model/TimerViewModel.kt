@@ -2,6 +2,8 @@ package com.nyama.cycle_timer.view_model
 
 import android.app.Application
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.*
 import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -10,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.nyama.cycle_timer.R
 import com.nyama.cycle_timer.data.TimerData
 import com.nyama.cycle_timer.utils.Utility.formatTime
 
@@ -20,7 +23,7 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
     private val _breakSeconds = MutableLiveData(0)
     private val _setNumber = MutableLiveData(5)
     private val _isActivity = MutableLiveData(true)
-    private  val _time = MutableLiveData("20:00")
+    private val _time = MutableLiveData("20:00")
     private val _isPlaying = MutableLiveData(false)
     private val _isCompleted = MutableLiveData(false)
     private val _isLastSet = MutableLiveData(false)
@@ -28,6 +31,8 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
     private val _currentSet = MutableLiveData(1)
 
     private val context = getApplication<Application>().applicationContext
+
+    var soundPool: SoundPool? = null
 
     private var countDownTimer: CountDownTimer? = null
 
@@ -50,7 +55,8 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
         _breakMinutes.value = timerData.breakMinutes
         _breakSeconds.value = timerData.breakSeconds
         _setNumber.value = timerData.setNumber
-        _time.value = getMilliseconds(_activityMinutes.value!!, _activitySeconds.value!!).formatTime()
+        _time.value =
+            getMilliseconds(_activityMinutes.value!!, _activitySeconds.value!!).formatTime()
         _isEndless.value = timerData.isEndless
     }
 
@@ -65,7 +71,7 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
     fun goNext() {
         countDownTimer?.cancel()
         if (_isActivity.value == true) {
-           _isActivity.value = false
+            _isActivity.value = false
         } else {
             _currentSet.value = _currentSet.value!! + 1
             if (!_isEndless.value!! && _currentSet.value == _setNumber.value) {
@@ -82,6 +88,7 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
     }
 
     private fun startTimer() {
+        val sound = soundPool!!.load(context, R.raw.button04a, 1)
 
         var milliseconds: Long
         _isPlaying.value = true
@@ -96,14 +103,16 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
             override fun onTick(millisRemaining: Long) {
                 if (millisRemaining in 1001..4000) {
                     vibratePhone(context = context)
+                    soundPool!!.play(sound, 1.0f, 1.0f, 0, 0, 1.0f)
                 }
                 handleTimerValues(true, millisRemaining.formatTime())
             }
 
             override fun onFinish() {
-                if(_isActivity.value!!) {
+                if (_isActivity.value!!) {
                     _isActivity.value = false
-                    _time.value = getMilliseconds(_breakMinutes.value!!, _breakSeconds.value!!).formatTime()
+                    _time.value =
+                        getMilliseconds(_breakMinutes.value!!, _breakSeconds.value!!).formatTime()
                     startTimer()
                 } else {
                     if (!_isEndless.value!! && _currentSet.value!! >= _setNumber.value!!) {
@@ -114,7 +123,10 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
                         if (_currentSet.value == _setNumber.value) {
                             _isLastSet.value = true
                         }
-                        _time.value = getMilliseconds(_activityMinutes.value!!, _activitySeconds.value!!).formatTime()
+                        _time.value = getMilliseconds(
+                            _activityMinutes.value!!,
+                            _activitySeconds.value!!
+                        ).formatTime()
                         startTimer()
                     }
                 }
@@ -122,7 +134,7 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
         }.start()
     }
 
-    fun getMilliseconds(minutes: Int, seconds: Int) : Long {
+    fun getMilliseconds(minutes: Int, seconds: Int): Long {
         return (minutes * 60 * 1000 + seconds * 1000).toLong()
     }
 
@@ -139,3 +151,4 @@ class TimerViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 }
+
